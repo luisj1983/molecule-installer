@@ -1,0 +1,14 @@
+---
+
+profile: shared # min, basic, moderate, safety, shared, production
+offline: true
+progressive: false
+parseable: true
+
+exclude_paths:
+  - .config
+  - .github
+  - .pre-commit-config.yaml
+
+skip_list:
+  - role-name[path]

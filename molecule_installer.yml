@@ -11,31 +11,33 @@
     - name: Include dpkg_vars
       ansible.builtin.include_vars: vars/main.yml
 
-
 ## WSL prep
 # https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/
-
     - name: Enable systemd for WSL2
       ansible.builtin.lineinfile:
         path: /etc/wsl.conf
         insertbefore: BOF
         line: "{{ item }}"
         create: true
+        mode: '0644'
       with_items:
         - '[boot]'
         - 'systemd=true'
+      when: enable_wsl_systemd
+
 
 ## Docker-in-WSL2 prep
-
-    - name: "Delete docker.list"
-      file:
-        path: /etc/apt/sources.list.d/docker.list
-        state: absent
-
-    - name: "Delete docker.gpg"
-      file:
-        path: /etc/apt/keyrings/docker.gpg
-        state: absent
+    - name: Docker clean-up
+      when: docker_cleanup
+      block:
+        - name: "Delete docker.list"
+          ansible.builtin.file:
+            path: /etc/apt/sources.list.d/docker.list
+            state: absent
+        - name: "Delete docker.gpg"
+          ansible.builtin.file:
+            path: /etc/apt/keyrings/docker.gpg
+            state: absent
 
     - name: "Docker pre-reqs"
       ansible.builtin.package:
@@ -49,50 +51,51 @@
       ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
-        keyring: /etc/apt/keyrings/docker.gpg
+        keyring: "{{ apt_docker_keyring_location }}"
       when: docker_pre_reqs_installed
       register: docker_gpg_key_installed
 
     - name: Add Docker Repository
       ansible.builtin.apt_repository:
-        repo: deb [arch={{ dpkg_arch }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        repo: deb [arch={{ dpkg_arch }} signed-by={{ apt_docker_keyring_location }}] {{ docker_base_url }} {{ ansible_distribution_release }} stable
         filename: docker
         state: present
       register: docker_repo_installed
       when: docker_gpg_key_installed
 
 # ## Docker-in-WSL2 installation
+    - name: Install docker
+      when: install_docker
+      block:
+        - name: Update apt and install docker-ce
+          ansible.builtin.apt:
+            name:
+              - docker-ce
+              - docker-compose-plugin
+            state: present
+            update_cache: true
+          register: docker_installed
+          when: docker_repo_installed
 
-    - name: Update apt and install docker-ce
-      ansible.builtin.apt:
-        name:
-          - docker-ce
-          - docker-compose-plugin
-        state: present
-        update_cache: true
-      register: docker_installed
-      when: docker_repo_installed
+        - name: Install Docker Module for Python
+          ansible.builtin.pip:
+            name: docker
+          when: docker_installed
 
-    - name: Install Docker Module for Python
-      ansible.builtin.pip:
-        name: docker
-      when: docker_installed
+        - name: Ensure group "docker" exists
+          ansible.builtin.group:
+            name: docker
+            state: present
 
+        - name: Added user to docker group
+          ansible.builtin.user:
+            name: luis
+            groups: docker
+            append: true
 
-    - name: Ensure group "docker" exists
-      ansible.builtin.group:
-        name: docker
-        state: present
-
-    - name: Added user to docker group
-      ansible.builtin.user:
-        name: luis
-        groups: docker
-        append: true
-
-    - name: Group change notification
-      ansible.builtin.debug:
-        msg: "You now need to manually run: newgrp docker"
+        - name: Group change notification
+          ansible.builtin.debug:
+            msg: "You now need to manually run: newgrp docker"
 
 ### Molecule installation
 ## From:
@@ -106,15 +109,7 @@
         state: present
         update_cache: true
 
-    - name: "PIP: Install Molecule and Ansible"
-      become: false
-      ansible.builtin.pip:
-        name:
-          - molecule
-          # - ansible-core
-        state: present
-
-    - name: "PIP: Install/upgrade setuptools"
+    - name: "PIP: Install Molecule"
       become: false
       ansible.builtin.pip:
         name: molecule
@@ -122,7 +117,7 @@
         extra_args: "--user"
         state: present
 
-    - name: "PIP: Install/upgrade molecule"
+    - name: "PIP: Install/upgrade setuptools"
       become: false
       ansible.builtin.pip:
         name: setuptools
@@ -155,6 +150,6 @@
         state: present
       register: molecule_driver_result
 
-    - name: debug
+    - name: Debug Docker Driver install
       ansible.builtin.debug:
         var: molecule_driver_result

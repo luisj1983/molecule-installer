@@ -1,5 +1,7 @@
 # RedHat Ansible Molecule installer (WSL and native)
 
+[![ansible-lint](https://github.com/luisj1983/molecule-installer/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/luisj1983/molecule-installer/actions/workflows/ansible-lint.yml)
+
 # Summary
 
 This playbook will install Ansible Molecule and any pre-requisites required for use with Docker, as well as Docker itself.

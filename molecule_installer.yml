@@ -40,29 +40,29 @@
     - name: Docker Install prep
       when: install_docker_required
       block:
-      - name: "Docker pre-reqs"
-        ansible.builtin.package:
-          name:
-            - ca-certificates
-            - curl
-            - gnupg
-        register: docker_pre_reqs_installed
+        - name: "Docker pre-reqs"
+          ansible.builtin.package:
+            name:
+              - ca-certificates
+              - curl
+              - gnupg
+          register: docker_pre_reqs_installed
 
-      - name: Add Docker GPG apt Key
-        ansible.builtin.apt_key:
-          url: https://download.docker.com/linux/ubuntu/gpg
-          state: present
-          keyring: "{{ apt_docker_keyring_location }}"
-        when: docker_pre_reqs_installed
-        register: docker_gpg_key_installed
+        - name: Add Docker GPG apt Key
+          ansible.builtin.apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            state: present
+            keyring: "{{ apt_docker_keyring_location }}"
+          when: docker_pre_reqs_installed
+          register: docker_gpg_key_installed
 
-      - name: Add Docker Repository
-        ansible.builtin.apt_repository:
-          repo: deb [arch={{ dpkg_arch }} signed-by={{ apt_docker_keyring_location }}] {{ docker_base_url }} {{ ansible_distribution_release }} stable
-          filename: docker
-          state: present
-        register: docker_repo_installed
-        when: docker_gpg_key_installed
+        - name: Add Docker Repository
+          ansible.builtin.apt_repository:
+            repo: deb [arch={{ dpkg_arch }} signed-by={{ apt_docker_keyring_location }}] {{ docker_base_url }} {{ ansible_distribution_release }} stable
+            filename: docker
+            state: present
+          register: docker_repo_installed
+          when: docker_gpg_key_installed
 
 # ## Docker-in-WSL2 installation
 
@@ -71,7 +71,7 @@
       block:
         - name: Update apt-cache if the last update is more than 3600 seconds ago
           ansible.builtin.apt:
-            update_cache: yes
+            update_cache: true
             cache_valid_time: 3600
 
         - name: Update apt and install docker-ce

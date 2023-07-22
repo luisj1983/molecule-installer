@@ -12,7 +12,7 @@ It is expected to work on `Ubuntu 18.xx` onwards and, potentially, `Debian 10` o
 
 Invoke using:
 
-> ansible-playbook -K molecule-installer.yml
+> ansible-playbook -K molecule_installer.yml
 
 # Included tasks: pre-requisites
 - `Enable systemd for WSL2`

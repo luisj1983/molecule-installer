@@ -116,42 +116,42 @@
       ansible.builtin.pip:
         name: molecule
         executable: pip3
-        extra_args: "--user"
+        # extra_args: "--user"
         state: present
 
-    - name: "PIP: Install/upgrade setuptools"
-      become: false
-      ansible.builtin.pip:
-        name: setuptools
-        executable: pip3
-        extra_args: "--upgrade --user"
-        state: present
+    # - name: "PIP: Install/upgrade setuptools"
+    #   become: false
+    #   ansible.builtin.pip:
+    #     name: setuptools
+    #     executable: pip3
+    #     extra_args: "--upgrade --user"
+    #     state: present
 
-    - name: "PIP: Install/upgrade ansible-lint"
-      become: false
-      ansible.builtin.pip:
-        name: ansible-lint
-        executable: pip3
-        extra_args: "--user"
-        state: present
+    # - name: "PIP: Install/upgrade ansible-lint"
+    #   become: false
+    #   ansible.builtin.pip:
+    #     name: ansible-lint
+    #     executable: pip3
+    #     extra_args: "--user"
+    #     state: present
 
-    - name: "PIP: Install Molecule Docker"
-      become: false
-      ansible.builtin.pip:
-        name: molecule-docker
-        executable: pip3
-        extra_args: "--user"
-        state: present
+    # - name: "PIP: Install Molecule Docker"
+    #   become: false
+    #   ansible.builtin.pip:
+    #     name: molecule-docker
+    #     executable: pip3
+    #     extra_args: "--user"
+    #     state: present
 
-    - name: "PIP: Install Molecule Docker Driver"
-      become: false
-      ansible.builtin.pip:
-        name: molecule-plugins[{{ molecule_driver }}]
-        executable: pip3
-        extra_args: "--user"
-        state: present
-      register: molecule_driver_result
+    # - name: "PIP: Install Molecule Docker Driver"
+    #   become: false
+    #   ansible.builtin.pip:
+    #     name: molecule-plugins[{{ molecule_driver }}]
+    #     executable: pip3
+    #     extra_args: "--user"
+    #     state: present
+    #   register: molecule_driver_result
 
-    - name: Debug Docker Driver install
-      ansible.builtin.debug:
-        var: molecule_driver_result
+    # - name: Debug Docker Driver install
+    #   ansible.builtin.debug:
+    #     var: molecule_driver_result

@@ -4,11 +4,10 @@
   become: true
   gather_facts: true
   ignore_errors: true
-  vars:
-    molecule_driver: docker
+
   tasks:
 
-    - name: Include dpkg_vars
+    - name: Include vars
       ansible.builtin.include_vars: vars/main.yml
 
 ## WSL prep
@@ -25,10 +24,9 @@
         - 'systemd=true'
       when: enable_wsl_systemd
 
-
 ## Docker-in-WSL2 prep
     - name: Docker clean-up
-      when: docker_cleanup
+      when: docker_cleanup_required
       block:
         - name: "Delete docker.list"
           ansible.builtin.file:
@@ -39,53 +37,60 @@
             path: /etc/apt/keyrings/docker.gpg
             state: absent
 
-    - name: "Docker pre-reqs"
-      ansible.builtin.package:
-        name:
-          - ca-certificates
-          - curl
-          - gnupg
-      register: docker_pre_reqs_installed
+    - name: Docker Install prep
+      when: install_docker_required
+      block:
+      - name: "Docker pre-reqs"
+        ansible.builtin.package:
+          name:
+            - ca-certificates
+            - curl
+            - gnupg
+        register: docker_pre_reqs_installed
 
-    - name: Add Docker GPG apt Key
-      ansible.builtin.apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-        keyring: "{{ apt_docker_keyring_location }}"
-      when: docker_pre_reqs_installed
-      register: docker_gpg_key_installed
+      - name: Add Docker GPG apt Key
+        ansible.builtin.apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
+          keyring: "{{ apt_docker_keyring_location }}"
+        when: docker_pre_reqs_installed
+        register: docker_gpg_key_installed
 
-    - name: Add Docker Repository
-      ansible.builtin.apt_repository:
-        repo: deb [arch={{ dpkg_arch }} signed-by={{ apt_docker_keyring_location }}] {{ docker_base_url }} {{ ansible_distribution_release }} stable
-        filename: docker
-        state: present
-      register: docker_repo_installed
-      when: docker_gpg_key_installed
+      - name: Add Docker Repository
+        ansible.builtin.apt_repository:
+          repo: deb [arch={{ dpkg_arch }} signed-by={{ apt_docker_keyring_location }}] {{ docker_base_url }} {{ ansible_distribution_release }} stable
+          filename: docker
+          state: present
+        register: docker_repo_installed
+        when: docker_gpg_key_installed
 
 # ## Docker-in-WSL2 installation
 
-    - name: "APT: Install PIP"
-      ansible.builtin.apt:
-        name:
-          - python3-pip
-          - libssl-dev
-        state: present
-        update_cache: true
-
-
-    - name: Install docker
-      when: install_docker
+    - name: Installing docker
+      when: install_docker_required
       block:
+        - name: Update apt-cache if the last update is more than 3600 seconds ago
+          ansible.builtin.apt:
+            update_cache: yes
+            cache_valid_time: 3600
+
         - name: Update apt and install docker-ce
           ansible.builtin.apt:
             name:
               - docker-ce
               - docker-compose-plugin
             state: present
-            update_cache: true
+            update_cache: false
           register: docker_installed
           when: docker_repo_installed
+
+        - name: "APT: Install PIP"
+          ansible.builtin.apt:
+            name:
+              - python3-pip
+              - libssl-dev
+            state: present
+            update_cache: false
 
         - name: Install Docker Module for Python
           ansible.builtin.pip:
@@ -107,51 +112,53 @@
           ansible.builtin.debug:
             msg: "You now need to manually run: newgrp docker"
 
+### Ansible installation
+
+    - name: "PIP: Install Ansible"
+      when: install_ansible_required
+      become: false
+      ansible.builtin.pip:
+        name:
+          - ansible-core
+          - ansible-lint
+        state: present
+
+
 ### Molecule installation
 ## From:
 # https://ansible.readthedocs.io/projects/molecule/installation/#requirements
 
-    - name: "PIP: Install Molecule"
-      become: false
-      ansible.builtin.pip:
-        name: molecule
-        executable: pip3
-        # extra_args: "--user"
-        state: present
+    - name: "Install Molecule"
+      when: install_molecule_required
+      block:
+        - name: "PIP: Install Molecule"
+          become: false
+          ansible.builtin.pip:
+            name:
+              - molecule
+            state: present
 
-    # - name: "PIP: Install/upgrade setuptools"
-    #   become: false
-    #   ansible.builtin.pip:
-    #     name: setuptools
-    #     executable: pip3
-    #     extra_args: "--upgrade --user"
-    #     state: present
+        - name: "PIP: Install/upgrade setuptools"
+          become: false
+          ansible.builtin.pip:
+            name: setuptools
+            state: present
 
-    # - name: "PIP: Install/upgrade ansible-lint"
-    #   become: false
-    #   ansible.builtin.pip:
-    #     name: ansible-lint
-    #     executable: pip3
-    #     extra_args: "--user"
-    #     state: present
+        - name: "PIP: Molecule Driver cleanup/remove"
+          when: molecule_driver_cleanup
+          become: false
+          ansible.builtin.pip:
+            name:
+              - molecule-{{ molecule_driver }}
+              - molecule-plugins[{{ molecule_driver }}]
+            state: absent
+          register: molecule_driver_result
 
-    # - name: "PIP: Install Molecule Docker"
-    #   become: false
-    #   ansible.builtin.pip:
-    #     name: molecule-docker
-    #     executable: pip3
-    #     extra_args: "--user"
-    #     state: present
-
-    # - name: "PIP: Install Molecule Docker Driver"
-    #   become: false
-    #   ansible.builtin.pip:
-    #     name: molecule-plugins[{{ molecule_driver }}]
-    #     executable: pip3
-    #     extra_args: "--user"
-    #     state: present
-    #   register: molecule_driver_result
-
-    # - name: Debug Docker Driver install
-    #   ansible.builtin.debug:
-    #     var: molecule_driver_result
+        - name: "PIP: Install Molecule Driver"
+          become: false
+          ansible.builtin.pip:
+            name:
+              - molecule-{{ molecule_driver }}
+              - molecule-plugins[{{ molecule_driver }}]
+            state: present
+          register: molecule_driver_result

@@ -14,15 +14,40 @@ dpkg_arch: >-
     {% endif %}
 
 
-## vars to control playbook components
+### vars to control playbook components
+
+## Main features
+# Install docker
+install_docker_required: true
+
+# Install Ansible
+install_ansible_required: false
+
+# Install Molecule
+install_molecule_required: true
+
+############
+# Set as one of:
+# azure
+# containers
+# docker
+# ec2
+# gce
+# podman
+# vagrant
+# https://github.com/ansible-community/molecule-plugins
+molecule_driver: docker
+
+molecule_driver_cleanup: true
 
 # Enable config changes to enable systemd in your WSL instance
 enable_wsl_systemd: false
+
 # Cleanup existing apt lists and keys
-docker_cleanup: true
-# Install docker
-install_docker: true
+docker_cleanup_required: true
+
 # Location to save docker keyring using apt
 apt_docker_keyring_location: /etc/apt/keyrings/docker.gpg
+
 # Base URL for Docker repository
 docker_base_url: https://download.docker.com/linux/ubuntu

@@ -38,8 +38,8 @@ Invoke using:
 
 # To do
 
-- [] Make playbook support additional Operating Systems (e.g. CentOS)
-- [] Break out sub-tasks such as docker_install, ansible_install
+- [ ] Make playbook support additional Operating Systems (e.g. CentOS)
+- [ ] Break out sub-tasks such as docker_install, ansible_install
 
 ## License
 GPL-3.0-or-later

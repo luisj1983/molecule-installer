@@ -28,6 +28,7 @@
 ## Docker-in-WSL2 prep
     - name: Docker clean-up
       when: docker_cleanup_required
+      tags: molecule-idempotence-notest
       block:
         - name: "Delete docker.list"
           ansible.builtin.file:
@@ -147,6 +148,7 @@
 
         - name: "PIP: Molecule Driver cleanup/remove"
           when: molecule_driver_cleanup
+          tags: molecule-idempotence-notest
           become: false
           ansible.builtin.pip:
             name:

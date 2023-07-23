@@ -1,0 +1,10 @@
+---
+- name: Playbook to manage Ansible Molecule
+  hosts: localhost
+  become: true
+  remote_user: root
+  gather_facts: true
+  ignore_errors: true
+
+  roles:
+    - installer

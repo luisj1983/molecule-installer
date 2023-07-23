@@ -1,12 +1,5 @@
 ---
 # tasks file for installer
-# - name: Playbook to install Ansible Molecule in WSL2
-  # hosts: localhost
-  # # connection: local
-  # become: true
-  # gather_facts: true
-  # ignore_errors: true
-
 
     - name: Include vars
       ansible.builtin.include_vars: vars/main.yml

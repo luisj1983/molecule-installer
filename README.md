@@ -11,8 +11,9 @@ It is designed to be executed on the Ansible Control Node and will make all chan
 It is expected to work on `Ubuntu 18.xx` onwards and, potentially, `Debian 10` onwards.
 
 Invoke using:
-
-> ansible-playbook -K molecule_installer.yml
+```
+ansible-playbook -K molecule_installer.yml
+```
 
 # Included tasks: pre-requisites
 - `Enable systemd for WSL2`
@@ -35,6 +36,10 @@ Invoke using:
 # Notes
 
 `/vars/main.yml` contains a mapping lookup for `ansible_distribution_file_variety` and `ansible_architecture` to construct the correct Docker repository URI.
+
+`molecule_driver_cleanup` and `docker_cleanup_required` are set to `true` by default.<br />
+The effect is that the playbook isn't, strictly speaking fully idempotent.<br />
+However, since those tasks ought to be run (according to the docs) and shouldn't break anything if run each time it's more of a technicality.
 
 # To do
 

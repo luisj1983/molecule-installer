@@ -1,0 +1,12 @@
+---
+
+### Ansible installation
+
+    - name: "PIP: Install Ansible"
+      when: install_ansible_required
+      become: false
+      ansible.builtin.pip:
+        name:
+          - ansible-core
+          - ansible-lint
+        state: present

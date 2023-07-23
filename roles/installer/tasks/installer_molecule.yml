@@ -1,0 +1,41 @@
+---
+
+### Molecule installation
+## From:
+# https://ansible.readthedocs.io/projects/molecule/installation/#requirements
+
+    - name: "Install Molecule"
+      when: install_molecule_required
+      block:
+        - name: "PIP: Install Molecule"
+          become: false
+          ansible.builtin.pip:
+            name:
+              - molecule
+            state: present
+
+        - name: "PIP: Install/upgrade setuptools"
+          become: false
+          ansible.builtin.pip:
+            name: setuptools
+            state: present
+
+        - name: "PIP: Molecule Driver cleanup/remove"
+          when: molecule_driver_cleanup
+          tags: molecule-idempotence-notest
+          become: false
+          ansible.builtin.pip:
+            name:
+              - molecule-{{ molecule_driver }}
+              - molecule-plugins[{{ molecule_driver }}]
+            state: absent
+          register: molecule_driver_result
+
+        - name: "PIP: Install Molecule Driver"
+          become: false
+          ansible.builtin.pip:
+            name:
+              - molecule-{{ molecule_driver }}
+              - molecule-plugins[{{ molecule_driver }}]
+            state: present
+          register: molecule_driver_result

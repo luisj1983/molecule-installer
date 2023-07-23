@@ -10,13 +10,16 @@ It is designed to be executed on the Ansible Control Node and will make all chan
 
 It is expected to work on `Ubuntu 18.xx` onwards and, potentially, `Debian 10` onwards.
 
-Invoke using:
-```
-ansible-playbook -K main.yml
-```
+<br />
 
-# Included tasks: pre-requisites
+# Roles
+## installer
+
+
+### installer: Included tasks: installer_prep
 - `Enable systemd for WSL2`
+
+### installer: Included tasks: installer_docker
 - `Delete any existing Docker config/keys from apt`
 - `Install Docker-ce and docker-compose from Docker.com repository`
 - `Install Docker Module for Python`
@@ -24,18 +27,33 @@ ansible-playbook -K main.yml
 - `Added user to docker group`
 - `Group change notification (notify user to run newgrp for group-permissions to take effect)`
 
-# Included tasks: Molecule
+### installer: Included tasks: installer_ansible
+- `Install ansible-core and ansible-lint using PIP`
+
+### installer: Included tasks: installer_molecule
 - `Install Molecule pre-reqs` (Python3 and libssl)
 - `Install/upgrade setuptools`
 - `Install Molecule`
-- `Install/upgrade setuptools`
 - `Install/upgrade ansible-lint`
-- `Install Molecule Docker`
-- `Install Molecule Docker Driver`
+- `Install Molecule-Docker`
+- `Install Molecule-Docker Driver`
+
+# Usage
+
+Invoke using:
+```
+ansible-playbook -K main.yml -tags <ROLENAME>
+```
+e.g.
+```
+ansible-playbook -K main.yml -tags installer
+```
+<br />
+
 
 # Notes
 
-`/vars/main.yml` contains a mapping lookup for `ansible_distribution_file_variety` and `ansible_architecture` to construct the correct Docker repository URI.
+`groupvars/main.yml` contains a mapping lookup for `ansible_distribution_file_variety` and `ansible_architecture` to construct the correct Docker repository URI.
 
 `molecule_driver_cleanup` and `docker_cleanup_required` are set to `true` by default.<br />
 The effect is that the playbook isn't, strictly speaking fully idempotent.<br />
@@ -45,6 +63,7 @@ However, since those tasks ought to be run (according to the docs) and shouldn't
 
 - [ ] Make playbook support additional Operating Systems (e.g. CentOS)
 - [x] Break out sub-tasks such as docker_install, ansible_install
+- [ ] Create 'Uninstall' role
 
 ## License
 GPL-3.0-or-later

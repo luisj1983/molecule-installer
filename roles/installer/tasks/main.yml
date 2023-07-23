@@ -1,20 +1,17 @@
 ---
 # tasks file for installer
 
-    # - name: Include vars
-    #   ansible.builtin.include_vars: vars/main.yml
-
     - name: Include vars
       ansible.builtin.include_vars: ../../group_vars/main.yml
 
     - name: Include installer_prep
       ansible.builtin.import_tasks: tasks/installer_prep.yml
 
-    - name: Include installer_prep
+    - name: Include installer_docker
       ansible.builtin.import_tasks: tasks/installer_docker.yml
 
-    - name: Include installer_prep
+    - name: Include installer_ansible
       ansible.builtin.import_tasks: tasks/installer_ansible.yml
 
-    - name: Include installer_prep
+    - name: Include installer_molecule
       ansible.builtin.import_tasks: tasks/installer_molecule.yml

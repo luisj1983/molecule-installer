@@ -26,18 +26,10 @@
       when: enable_wsl_systemd
 
 ## Docker-in-WSL2 prep
-    - name: Docker clean-up
-      when: docker_cleanup_required
-      tags: molecule-idempotence-notest
-      block:
-        - name: "Delete docker.list"
-          ansible.builtin.file:
-            path: /etc/apt/sources.list.d/docker.list
-            state: absent
-        - name: "Delete docker.gpg"
-          ansible.builtin.file:
-            path: /etc/apt/keyrings/docker.gpg
-            state: absent
+
+    - name: Update apt-cache
+      ansible.builtin.apt:
+        update_cache: true
 
     - name: Docker Install prep
       when: install_docker_required
@@ -48,23 +40,37 @@
               - ca-certificates
               - curl
               - gnupg
+              - python3-debian
           register: docker_pre_reqs_installed
 
-        - name: Add Docker GPG apt Key
-          ansible.builtin.apt_key:
-            url: https://download.docker.com/linux/ubuntu/gpg
-            state: present
-            keyring: "{{ apt_docker_keyring_location }}"
-          when: docker_pre_reqs_installed
-          register: docker_gpg_key_installed
+    - name: Docker clean-up
+      when: docker_cleanup_required
+      tags: molecule-idempotence-notest
+      block:
+        - name: Cleanup Docker repository
+          ansible.builtin.deb822_repository:
+            name: docker
+            state: absent
+          register: docker_cleanup_done
 
-        - name: Add Docker Repository
-          ansible.builtin.apt_repository:
-            repo: deb [arch={{ dpkg_arch }} signed-by={{ apt_docker_keyring_location }}] {{ docker_base_url }} {{ ansible_distribution_release }} stable
-            filename: docker
-            state: present
-          register: docker_repo_installed
-          when: docker_gpg_key_installed
+    - name: Update apt-cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Add Docker repository
+      ansible.builtin.deb822_repository:
+        name: docker
+        types: deb
+        suites: '{{ ansible_distribution_release }}'
+        components: stable
+        architectures: "{{ dpkg_arch }}"
+        uris: "{{ docker_base_url }}"
+        signed_by: "{{ apt_docker_key }}"
+        state: present
+        enabled: true
+      when: docker_pre_reqs_installed
+      register: docker_repo_installed
+
 
 # ## Docker-in-WSL2 installation
 
@@ -74,7 +80,6 @@
         - name: Update apt-cache if the last update is more than 3600 seconds ago
           ansible.builtin.apt:
             update_cache: true
-            cache_valid_time: 3600
 
         - name: Update apt and install docker-ce
           ansible.builtin.apt:

@@ -1,0 +1,22 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: ubuntu2204
+    image: ubuntu:22.04
+    dockerfile: ../common/Dockerfile_ubuntu2204.j2
+    entrypoint: "/usr/bin/bash"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true
+    pre_build_image: false
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      remote_tmp: /tmp
+
+verifier:
+  name: ansible

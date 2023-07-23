@@ -1,6 +1,6 @@
 ---
 
-profile: shared # min, basic, moderate, safety, shared, production
+profile: production # min, basic, moderate, safety, shared, production
 offline: true
 progressive: false
 parseable: true

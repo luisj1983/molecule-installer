@@ -1,0 +1,6 @@
+---
+- name: Import roles for testing
+  hosts: localhost
+  remote_user: root
+  roles:
+    - roles/installer

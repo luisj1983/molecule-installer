@@ -14,12 +14,6 @@ ENV {{ var }} {{ value }}
 {% endfor %}
 {% endif %}
 
-LABEL org.opencontainers.image.authors="Netdata packaging team <agent-sre@netdata.cloud>"
-LABEL org.opencontainers.image.source="https://github.com/netdata/helper-images"
-LABEL org.opencontainers.image.title="Netdata Ansible-Docker Base Image"
-LABEL org.opencontainers.image.description="Base image for official Netdata Ansible-Docker images."
-LABEL org.opencontainers.image.vendor="Netdata Inc."
-
 ARG RELEASE
 ARG LAUNCHPAD_BUILD_ARCH
 ARG DEBIAN_FRONTEND=noninteractive

@@ -49,7 +49,7 @@ enable_wsl_systemd: false
 docker_cleanup_required: true
 
 # Location to save docker keyring using apt
-apt_docker_keyring_location: /etc/apt/keyrings/docker.gpg
+apt_docker_key: https://download.docker.com/linux/ubuntu/gpg
 
 # Base URL for Docker repository
 docker_base_url: https://download.docker.com/linux/ubuntu

@@ -1,8 +1,11 @@
 ---
 # tasks file for installer
 
+    # - name: Include vars
+    #   ansible.builtin.include_vars: vars/main.yml
+
     - name: Include vars
-      ansible.builtin.include_vars: vars/main.yml
+      ansible.builtin.include_vars: ../../group_vars/main.yml
 
     - name: Include installer_prep
       ansible.builtin.import_tasks: tasks/installer_prep.yml

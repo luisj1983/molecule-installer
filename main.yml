@@ -7,4 +7,5 @@
   ignore_errors: false
 
   roles:
-    - installer
+    - role: installer
+      tags: install

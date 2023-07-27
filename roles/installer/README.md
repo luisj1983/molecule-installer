@@ -1,38 +1,69 @@
-Role Name
-=========
+# RedHat Ansible Molecule installer (WSL and native)
 
-`Installer` (RedHat Ansible Molecule installer (WSL and native))
+[![ansible-lint](https://github.com/luisj1983/molecule-installer/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/luisj1983/molecule-installer/actions/workflows/ansible-lint.yml)
 
-Requirements
-------------
+# Summary
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This playbook will install/remove Ansible Molecule and any pre-requisites required for use with Docker, as well as Docker itself.
 
-Role Variables
---------------
+It is designed to be executed on the Ansible Control Node and will make all changes **locally**.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+It is expected to work on `Ubuntu 18.xx` onwards and, potentially, `Debian 10` onwards.
 
-Dependencies
-------------
+<br />
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+# Roles
+## installer
 
-Example Playbook
-----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+### installer: Included tasks: installer_prep
+- `Enable systemd for WSL2`
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+### installer: Included tasks: installer_docker
+- `Delete any existing Docker config/keys from apt`
+- `Install Docker-ce and docker-compose from Docker.com repository`
+- `Install Docker Module for Python`
+- `Ensure group "docker" exists`
+- `Added user to docker group`
+- `Group change notification (notify user to run newgrp for group-permissions to take effect)`
 
-License
--------
+### installer: Included tasks: installer_ansible
+- `Install ansible-core and ansible-lint using PIP`
 
-BSD
+### installer: Included tasks: installer_molecule
+- `Install Molecule pre-reqs` (Python3 and libssl)
+- `Install/upgrade setuptools`
+- `Install Molecule`
+- `Install/upgrade ansible-lint`
+- `Install Molecule-Docker`
+- `Install Molecule-Docker Driver`
 
-Author Information
-------------------
+# Usage
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Invoke using:
+```
+ansible-playbook -K main.yml -tags <ROLENAME>
+```
+e.g.
+```
+ansible-playbook -K main.yml -tags installer
+```
+<br />
+
+
+# Notes
+
+1. `groupvars/main.yml` contains a mapping lookup for `ansible_distribution_file_variety` and `ansible_architecture` to construct the correct Docker repository URI.
+
+2. `molecule_driver_cleanup` and `docker_cleanup_required` are set to `true` by default.<br />
+The effect is that the playbook isn't, strictly speaking fully idempotent.<br />
+However, since those tasks ought to be run (according to the docs) and shouldn't break anything if run each time it's more of a technicality.
+
+# To do
+
+- [ ] Make playbook support additional Operating Systems (e.g. CentOS)
+- [x] Break out sub-tasks such as docker_install, ansible_install
+- [ ] Create 'Uninstall' role
+
+## License
+GPL-3.0-or-later

@@ -63,7 +63,7 @@ However, since those tasks ought to be run (according to the docs) and shouldn't
 
 - [ ] Make playbook support additional Operating Systems (e.g. CentOS)
 - [x] Break out sub-tasks such as docker_install, ansible_install
-- [ ] Create 'Uninstall' role
+- [ ] ~~Create 'Uninstall' role~~
 
 ## License
 GPL-3.0-or-later

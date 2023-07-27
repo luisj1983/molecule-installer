@@ -56,14 +56,14 @@ ansible-playbook -K main.yml -tags installer
 `groupvars/main.yml` contains a mapping lookup for `ansible_distribution_file_variety` and `ansible_architecture` to construct the correct Docker repository URI.
 
 `molecule_driver_cleanup` and `docker_cleanup_required` are set to `true` by default.<br />
-The effect is that the playbook isn't, strictly speaking fully idempotent.<br />
+The effect is that the playbook isn't, strictly speaking, fully idempotent.<br />
 However, since those tasks ought to be run (according to the docs) and shouldn't break anything if run each time it's more of a technicality.
 
 # To do
 
 - [ ] Make playbook support additional Operating Systems (e.g. CentOS)
 - [x] Break out sub-tasks such as docker_install, ansible_install
-- [ ] Create 'Uninstall' role
+- [ ] ~~Create 'Uninstall' role~~
 
 ## License
 GPL-3.0-or-later

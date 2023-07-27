@@ -4,7 +4,7 @@
 
 # Summary
 
-This playbook will install/remove Ansible Molecule and any pre-requisites required for use with Docker, as well as Docker itself.
+This playbook will install Ansible Molecule and any pre-requisites required for use with Docker, as well as Docker itself.
 
 It is designed to be executed on the Ansible Control Node and will make all changes **locally**.
 

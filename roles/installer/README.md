@@ -46,7 +46,7 @@ ansible-playbook -K main.yml -tags <ROLENAME>
 ```
 e.g.
 ```
-ansible-playbook -K main.yml -tags installer
+ansible-playbook -K main.yml --tags installer
 ```
 <br />
 

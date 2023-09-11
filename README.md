@@ -42,11 +42,11 @@ It is expected to work on `Ubuntu 18.xx` onwards and, potentially, `Debian 10` o
 
 Invoke using:
 ```
-ansible-playbook -K main.yml -tags <ROLENAME>
+ansible-playbook -K main.yml --tags <ROLENAME>
 ```
 e.g.
 ```
-ansible-playbook -K main.yml -tags installer
+ansible-playbook -K main.yml --tags installer
 ```
 <br />
 

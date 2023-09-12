@@ -17,11 +17,8 @@ jobs:
       name: Hadolint
       runs-on: ubuntu-latest
       container: hadolint/hadolint:latest-debian
-      command: hadolint ./molecule/common/Dockerfile_*
       steps:
         - uses: actions/checkout@v3
         - uses: hadolint/hadolint-action@v3.1.0
-
-
-          # with:
-          #   dockerfile: ./molecule/common/Dockerfile_*
+          with:
+            dockerfile: ./molecule/common/Dockerfile_*

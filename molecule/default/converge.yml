@@ -4,4 +4,4 @@
   tasks:
     - name: "Include installer"
       ansible.builtin.include_role:
-        name: roles/installer
+        name:  ../../roles/installer

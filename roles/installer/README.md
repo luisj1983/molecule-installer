@@ -8,8 +8,8 @@ This playbook will install Ansible Molecule and any pre-requisites required for 
 
 It is designed to be executed on the Ansible Control Node and will make all changes **locally**.
 
-It is expected to work on `Ubuntu 18.xx` onwards and, potentially, `Debian 10` onwards.
-
+It is expected to work on `Ubuntu 18.xx` onwards up to Ubuntu 22.04 and, potentially, `Debian 10` onwards.
+Note: does not currently work on Ubuntu 23.04
 <br />
 
 # Roles

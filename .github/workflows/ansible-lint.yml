@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main # or version tag instead of 'main'
-    name: Hadolint dockerfile Lint
+      - name: Hadolint dockerfile Lint
       - uses: actions/checkout@v3
       - uses: hadolint/hadolint-action@v3.1.0
         with:

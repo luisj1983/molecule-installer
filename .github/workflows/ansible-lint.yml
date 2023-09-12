@@ -15,9 +15,11 @@ jobs:
         uses: ansible/ansible-lint@main # or version tag instead of 'main'
   hadolint:
       name: Hadolint
-      runs-on: ubuntu-22.04
+      runs-on: ubuntu-latest
+      container: hadolint/hadolint:latest-debian
       steps:
         - uses: actions/checkout@v3
         - uses: hadolint/hadolint-action@v3.1.0
-          with:
-            dockerfile: molecule/common/Dockerfile_*
+      run: hadolint ./molecule/common/Dockerfile_*
+          # with:
+          #   dockerfile: ./molecule/common/Dockerfile_*
